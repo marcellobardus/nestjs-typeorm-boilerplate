@@ -16,17 +16,13 @@ export class UsersService {
     this.repository = usersRepository;
   }
 
-  /**
-   *
-   * @param email - user email
-   * @param password - user password
-   * @returns - user's id after insert
-   */
-  async insert(email: string, password: string): Promise<number> {
+  async insert(email: string, password: string): Promise<number | null> {
     const user = new User();
     user.email = email;
     user.password = password;
-    await this.repository.insert(user);
-    return user.id;
+    return user
+      .save()
+      .then(user => user.id)
+      .catch(() => null);
   }
 }

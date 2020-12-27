@@ -8,6 +8,6 @@ COPY . .
 RUN npm install -g ts-node nodemon typescript
 RUN npm install
 
-EXPOSE 9097
+EXPOSE 3000
 
 CMD ["npm", "run", "start:dev"]

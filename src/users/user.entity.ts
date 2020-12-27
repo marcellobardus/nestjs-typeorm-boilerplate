@@ -14,7 +14,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   public email: string;
 
   @Column({ type: 'varchar' })
@@ -22,6 +22,9 @@ export class User extends BaseEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async bcryptPassword() {
-    this.password = await hash(this.password, process.env.BCRYPT_ROUNDS);
+    this.password = await hash(
+      this.password,
+      Number(process.env.BCRYPT_ROUNDS),
+    );
   }
 }

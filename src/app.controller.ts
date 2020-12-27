@@ -1,39 +1,49 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
+
+import { Request as ExpressRequest } from 'express';
+
+import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
 import { CredentialsDto } from './dtos';
 import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('signup')
   async signup(@Body() dto: CredentialsDto) {
-    const exisiting = await this.usersService.repository.findOne({
-      email: dto.email,
-    });
+    const id = await this.usersService.insert(dto.email, dto.password);
+    return { success: id !== null, id };
+  }
 
-    // TODO stuff below should be done by the db server, unnecessary db request
+  @Post('signin')
+  async signin(@Body() dto: CredentialsDto) {
+    const user = await this.authService.validateUser(dto.email, dto.password);
 
-    if (exisiting) {
-      throw new HttpException(
-        'User with the given id already exists',
-        HttpStatus.BAD_GATEWAY,
-      );
+    if (!user) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    const newlyCreatedUserId = await this.usersService.insert(
-      dto.email,
-      dto.password,
-    );
+    const token = await this.authService.issueJwt(user);
+    return { token };
+  }
 
-    return {
-      id: newlyCreatedUserId,
-    };
+  @UseGuards(JwtAuthGuard)
+  @Get('test')
+  async testProtected(@Request() req: ExpressRequest) {
+    return req.user;
   }
 }
