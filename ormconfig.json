@@ -7,5 +7,6 @@
   "password": "secret_password",
   "synchronize": true,
   "logging": false,
+  "keepConnectionAlive": true,
   "entities": ["src/**/**.entity{.ts,.js}"]
 }

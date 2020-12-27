@@ -8,7 +8,7 @@ describe('AppController (e2e)', () => {
   let app;
   let authToken;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -19,7 +19,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/signup (POST)', () => {
+  it('/api/signup (POST)', () => {
     return request(app.getHttpServer())
       .post('/signup')
       .send({
@@ -33,22 +33,22 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  it('/signin (POST)', () => {
+  it('/api/signin (POST)', () => {
     return request(app.getHttpServer())
-      .post('/signip')
+      .post('/signin')
       .send({
         email: 'foo@bar.com',
         password: 'example',
       })
-      .expect(201)
       .expect('Content-Type', /json/)
+      .expect(201)
       .then(response => {
         expect(response.body.token).toBeDefined();
         authToken = response.body.token;
       });
   });
 
-  it('/test (GET)', () => {
+  it('/api/test (GET)', () => {
     return request(app.getHttpServer())
       .get('/test')
       .auth(authToken, { type: 'bearer' })
@@ -56,7 +56,7 @@ describe('AppController (e2e)', () => {
       .expect('Content-Type', /json/)
       .then(response => {
         expect(response.body.email).toEqual('foo@bar.com');
-        expect(response.body.id).toEqual('1');
+        expect(response.body.id).toEqual(1);
       });
   });
 });
