@@ -1,0 +1,37 @@
+version: '3'
+services:
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run test:e2e
+    ports:
+      - '3000'
+    networks:
+      - netwr
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+  postgres:
+    image: postgres
+    ports:
+      - '5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret_password
+      PGDATA: /data/postgres
+      POSTGRES_DB: put-db-name-here
+    networks:
+      - netwr
+    volumes:
+      - './postgres-data:/data/postgres'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 12s
+      timeout: 5s
+      retries: 5
+networks:
+  netwr:

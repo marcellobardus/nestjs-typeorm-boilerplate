@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-import { UsersService } from 'src/users/users.service';
-
 import { compare } from 'bcrypt';
-import { User } from 'src/users/user.entity';
+
+import { User } from '../users/user.entity';
+import { UsersService } from '../users/users.service';
+
 import { JwtBodyInterface } from './interfaces/jwt.body.interface';
 
 @Injectable()

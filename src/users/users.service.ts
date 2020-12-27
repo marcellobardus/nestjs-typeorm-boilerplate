@@ -23,6 +23,9 @@ export class UsersService {
     return user
       .save()
       .then(user => user.id)
-      .catch(() => null);
+      .catch(e => {
+        console.log(e);
+        return null;
+      });
   }
 }

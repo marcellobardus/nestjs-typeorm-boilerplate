@@ -15,4 +15,20 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should create a new account', async () => {
+    const account = { email: 'foo@bar.com', password: 'example' };
+    const creationSuccess = await service.insert(
+      account.email,
+      account.password,
+    );
+    expect(creationSuccess).toBeDefined();
+
+    const recreationAttempt = await service.insert(
+      account.email,
+      account.password,
+    );
+
+    expect(recreationAttempt).toBeNull();
+  });
 });
